@@ -1,0 +1,204 @@
+/* q'Queso · Estilos de la página de pedidos (usa las variables de styles.css) */
+
+.top { background: var(--amarillo); }
+.top-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: .5rem;
+}
+.top img { height: 72px; width: auto; display: block; }
+.volver { text-decoration: none; font-weight: 500; }
+.volver:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+.pedido {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 3rem;
+  padding-block: 3rem 6rem;
+  align-items: start;
+}
+
+h1 {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(2rem, 5vw, 3rem);
+  letter-spacing: -.02em;
+  line-height: 1.05;
+  margin: 0 0 .75rem;
+}
+.aviso { color: var(--gris); margin: 0 0 1.75rem; max-width: 54ch; }
+
+/* Filtros */
+.filtros { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.5rem; }
+.filtro {
+  font: inherit;
+  font-weight: 500;
+  background: transparent;
+  color: var(--negro);
+  border: 1.5px solid var(--negro);
+  border-radius: 999px;
+  padding: .4rem 1.1rem;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.filtro:hover { background: var(--linea); }
+.filtro[aria-pressed="true"] { background: var(--negro); color: var(--amarillo); }
+
+/* Productos */
+.producto-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  padding-block: 1.5rem;
+  border-top: 1px solid var(--linea);
+}
+.producto-item:last-child { border-bottom: 1px solid var(--linea); }
+.producto-item h3 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  letter-spacing: -.01em;
+  margin: 0;
+}
+.producto-item p { margin: .15rem 0 .4rem; color: var(--gris); font-size: .98rem; }
+.precio { font-weight: 500; }
+.es-agotado .info { opacity: .5; }
+.agotado { color: var(--gris); font-size: .95rem; white-space: nowrap; }
+
+.agregar {
+  font: inherit;
+  font-weight: 500;
+  background: var(--negro);
+  color: var(--amarillo);
+  border: 0;
+  border-radius: 999px;
+  padding: .55rem 1.3rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .2s, color .2s;
+}
+.agregar:hover { background: var(--naranja); color: #fff; }
+
+.cantidad {
+  display: inline-flex;
+  align-items: center;
+  border: 1.5px solid var(--negro);
+  border-radius: 999px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.cantidad button {
+  font: inherit;
+  font-size: 1.25rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.cantidad button:hover { background: var(--amarillo); }
+.cantidad span { min-width: 4.5rem; text-align: center; font-weight: 500; }
+
+/* Carrito */
+.carrito {
+  background: #fff;
+  border: 1.5px solid var(--negro);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  position: sticky;
+  top: 1.5rem;
+  scroll-margin-top: 1rem;
+}
+.carrito h2 { font-size: 1.6rem; margin: 0 0 1rem; }
+.vacio { color: var(--gris); margin: 0; }
+
+.linea {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: .75rem;
+  border-bottom: 1px solid var(--linea);
+}
+.linea strong { display: block; font-weight: 500; }
+.linea div > span { color: var(--gris); font-size: .95rem; }
+.linea-der { display: flex; align-items: flex-start; gap: .5rem; text-align: right; }
+.linea-der > span { color: var(--negro) !important; font-weight: 500; font-size: 1rem !important; }
+.quitar {
+  font: inherit;
+  font-size: 1.3rem;
+  line-height: 1;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--gris);
+  cursor: pointer;
+}
+.quitar:hover { background: var(--linea); color: var(--negro); }
+
+.total-fila {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-block: 1.1rem;
+  font-size: 1.1rem;
+}
+.total-fila strong { font-family: var(--display); font-size: 1.75rem; }
+
+#datos label { display: block; font-weight: 500; font-size: .95rem; margin: .75rem 0 .3rem; }
+#datos input, #datos textarea {
+  width: 100%;
+  font: inherit;
+  padding: .65rem .85rem;
+  border: 1.5px solid var(--linea);
+  border-radius: .75rem;
+  background: var(--papel);
+  color: var(--negro);
+  resize: vertical;
+}
+#datos input:focus, #datos textarea:focus { border-color: var(--negro); outline: 0; }
+.enviar { width: 100%; margin-top: 1.25rem; border: 0; font: inherit; font-weight: 500; cursor: pointer; text-align: center; }
+.vaciar {
+  display: block;
+  margin: 1rem auto 0;
+  font: inherit;
+  font-size: .92rem;
+  background: none;
+  border: 0;
+  color: var(--gris);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.vaciar:hover { color: var(--negro); }
+
+/* Barra inferior fija en celular */
+.barra {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--negro);
+  color: var(--amarillo);
+  text-decoration: none;
+  padding: .95rem 1.4rem;
+  border-radius: 999px;
+  font-weight: 500;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
+  z-index: 10;
+}
+
+@media (max-width: 900px) {
+  .pedido { grid-template-columns: 1fr; gap: 2.5rem; padding-bottom: 8rem; }
+  .carrito { position: static; }
+  .barra:not([hidden]) { display: flex; }
+}
+@media (max-width: 480px) {
+  .producto-item { flex-direction: column; align-items: flex-start; gap: 1rem; }
+}

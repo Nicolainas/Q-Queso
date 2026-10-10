@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>q'Queso!</title>
+<meta name="description" content="q'Queso: quesos, embutidos y fiambres. Un emprendimiento familiar de padre e hijo.">
+<link rel="icon" href="Logo_q_Queso-Sin-Fondo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="hero">
+  <nav class="wrap nav" aria-label="Principal">
+    <a href="#productos">Productos</a>
+    <a href="#nosotros">Nosotros</a>
+    <a href="pedidos.html">Pedidos</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+  <div class="hero-body wrap">
+    <div>
+      <img class= "logo" src="logo.png" alt="q'Queso" width="708" height="561">
+      <p>Quesos, embutidos y fiambres.</p>
+      <a class="boton" href="pedidos.html">Hacer un pedido</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="productos">
+    <div class="wrap">
+      <h2>Lo que tenemos</h2>
+      <div class="producto">
+        <h3>Quesos</h3>
+        <p>Blandos, semiduros y duros. Para la tabla, para rallar o para fundir. Cortamos la cantidad que necesites.</p>
+      </div>
+      <div class="producto">
+        <h3>Embutidos</h3>
+        <p>Salames, longanizas y chorizos seleccionados, listos para picar o para llevar a la parrilla.</p>
+      </div>
+      <div class="producto">
+        <h3>Fiambres</h3>
+        <p>Jamón cocido, crudo, bondiola y más, fileteados al momento.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="nosotros" class="nosotros">
+    <div class="wrap">
+      <h2>Somos padre e hijo</h2>
+      <div>
+        <p>Acá en q'Queso queremos que lo bueno llegue a tu mesa sin vueltas.</p>
+        <p>Elegimos cada producto nosotros mismos y atendemos personalmente cada pedido, desde una picada para el fin de semana hasta lo que necesites para tu comercio.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contacto" class="contacto">
+    <div class="wrap">
+      <h2>Escribinos y armamos tu pedido</h2>
+      <a class="boton" href="https://wa.me/5493404437353?text=Hola!%20Quisiera%20hacer%20un%20pedido." target="_blank" rel="noopener">Escribir por WhatsApp</a>
+      <div class="datos">
+        <span>Galvez, Santa Fe</span>
+        <span>Lunes a sábado</span>
+        <a href="https://www.instagram.com/quequesos.ok/" target="_blank" rel="noopener">@q'Queso</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">© <span id="anio">2026</span> Nicolás Berra. Todos los derechos reservados.</div>
+</footer>
+
+<script>document.getElementById('anio').textContent = new Date().getFullYear();</script>
+</body>
+</html>
