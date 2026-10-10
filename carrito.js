@@ -4,6 +4,7 @@
 
   const CLAVE = "qqueso-carrito";
   const PASO_KG = 0.25; // se vende de a 250 g
+  const TODAS = "Todas";
 
   const $ = (id) => document.getElementById(id);
   const moneda = new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
@@ -11,10 +12,16 @@
 
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  // Para buscar sin importar mayúsculas ni tildes
+  const norm = (s) => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
   const porId = new Map(PRODUCTOS.map((p) => [p.id, p]));
+  const marcaDe = (p) => p.marca || "Otras";
+
   let carrito = cargar();
-  let filtro = "Todos";
+  let filtro = "Todos";     // categoría
+  let marcaSel = TODAS;     // marca
+  let busqueda = "";
 
   /* ---------- Persistencia (el pedido sobrevive a recargar la página) ---------- */
   function cargar() {
@@ -42,6 +49,7 @@
   }
   const textoPrecio = (p) => `${moneda.format(p.precio)} / ${p.unidad === "kg" ? "kg" : "unidad"}`;
   const subtotal = (p, cant) => p.precio * cant;
+  const nombreCompleto = (p) => (p.marca ? `${p.nombre} (${p.marca})` : p.nombre);
 
   /* ---------- Cambios ---------- */
   function cambiar(id, delta) {
@@ -53,7 +61,7 @@
     renderTodo();
   }
 
-  /* ---------- Render: filtros y catálogo ---------- */
+  /* ---------- Filtros ---------- */
   function renderFiltros() {
     const cats = ["Todos", ...new Set(PRODUCTOS.map((p) => p.categoria))];
     $("filtros").innerHTML = cats.map((c) =>
@@ -61,38 +69,97 @@
     ).join("");
   }
 
+  // El selector de marcas muestra solo las marcas de la categoría elegida
+  function renderMarcas() {
+    const delaCat = PRODUCTOS.filter((p) => filtro === "Todos" || p.categoria === filtro);
+    const cuenta = new Map();
+    delaCat.forEach((p) => cuenta.set(marcaDe(p), (cuenta.get(marcaDe(p)) || 0) + 1));
+    const marcas = [...cuenta.keys()].sort((a, b) => a.localeCompare(b, "es"));
+
+    if (marcaSel !== TODAS && !cuenta.has(marcaSel)) marcaSel = TODAS;
+
+    $("marca").innerHTML =
+      `<option value="${TODAS}">Todas las marcas (${marcas.length})</option>` +
+      marcas.map((m) =>
+        `<option value="${esc(m)}"${m === marcaSel ? " selected" : ""}>${esc(m)} (${cuenta.get(m)})</option>`
+      ).join("");
+    $("marca").value = marcaSel;
+  }
+
+  function visibles() {
+    const q = norm(busqueda.trim());
+    return PRODUCTOS.filter((p) =>
+      (filtro === "Todos" || p.categoria === filtro) &&
+      (marcaSel === TODAS || marcaDe(p) === marcaSel) &&
+      (!q || norm([p.nombre, p.marca, p.descripcion, p.categoria].join(" ")).includes(q))
+    );
+  }
+
+  /* ---------- Render: catálogo ---------- */
+  function itemHTML(p, mostrarMarca) {
+    const cant = carrito[p.id] || 0;
+    const agotado = p.disponible === false;
+    let control;
+    if (agotado) {
+      control = `<span class="agotado">Sin stock</span>`;
+    } else if (cant === 0) {
+      control = `<button type="button" class="agregar" data-id="${esc(p.id)}" data-delta="1">Agregar</button>`;
+    } else {
+      control = `
+        <div class="cantidad" role="group" aria-label="Cantidad de ${esc(p.nombre)}">
+          <button type="button" data-id="${esc(p.id)}" data-delta="-1" aria-label="Quitar">−</button>
+          <span>${esc(textoCantidad(p, cant))}</span>
+          <button type="button" data-id="${esc(p.id)}" data-delta="1" aria-label="Agregar más">+</button>
+        </div>`;
+    }
+    return `
+      <article class="producto-item${agotado ? " es-agotado" : ""}">
+        <div class="info">
+          ${mostrarMarca && p.marca ? `<span class="marca-tag">${esc(p.marca)}</span>` : ""}
+          <h3>${esc(p.nombre)}${p.nuevo ? '<span class="nuevo">Nuevo</span>' : ""}</h3>
+          ${p.descripcion ? `<p>${esc(p.descripcion)}</p>` : ""}
+          <span class="precio">${esc(textoPrecio(p))}</span>
+        </div>
+        <div class="accion">${control}</div>
+      </article>`;
+  }
+
   function renderCatalogo() {
-    const visibles = PRODUCTOS.filter((p) => filtro === "Todos" || p.categoria === filtro);
-    if (!visibles.length) {
-      $("lista").innerHTML = `<p class="vacio">No hay productos en esta categoría por ahora.</p>`;
+    const lista = visibles();
+    const aviso = (CONFIG.avisos || {})[filtro] || "";
+    $("aviso-cat").textContent = aviso;
+    $("aviso-cat").hidden = !aviso;
+    $("resultados").textContent = lista.length === 1 ? "1 producto" : `${lista.length} productos`;
+
+    if (!lista.length) {
+      $("lista").innerHTML = `
+        <p class="vacio">No encontramos productos con esos filtros.</p>
+        <button type="button" class="limpiar" data-limpiar="1">Limpiar filtros</button>`;
       return;
     }
-    $("lista").innerHTML = visibles.map((p) => {
-      const cant = carrito[p.id] || 0;
-      const agotado = p.disponible === false;
-      let control;
-      if (agotado) {
-        control = `<span class="agotado">Sin stock</span>`;
-      } else if (cant === 0) {
-        control = `<button type="button" class="agregar" data-id="${esc(p.id)}" data-delta="1">Agregar</button>`;
-      } else {
-        control = `
-          <div class="cantidad" role="group" aria-label="Cantidad de ${esc(p.nombre)}">
-            <button type="button" data-id="${esc(p.id)}" data-delta="-1" aria-label="Quitar">−</button>
-            <span>${esc(textoCantidad(p, cant))}</span>
-            <button type="button" data-id="${esc(p.id)}" data-delta="1" aria-label="Agregar más">+</button>
-          </div>`;
-      }
-      return `
-        <article class="producto-item${agotado ? " es-agotado" : ""}">
-          <div class="info">
-            <h3>${esc(p.nombre)}</h3>
-            ${p.descripcion ? `<p>${esc(p.descripcion)}</p>` : ""}
-            <span class="precio">${esc(textoPrecio(p))}</span>
-          </div>
-          <div class="accion">${control}</div>
-        </article>`;
-    }).join("");
+
+    // Con una marca elegida: lista simple (cada producto muestra su marca arriba). Si no, se agrupa para leer más fácil:
+    //   - categoría puntual → por marca (orden alfabético)
+    //   - todas las categorías → por categoría
+    if (marcaSel !== TODAS) {
+      $("lista").innerHTML = lista.map((p) => itemHTML(p, true)).join("");
+      return;
+    }
+
+    const porMarca = filtro !== "Todos";
+    const grupos = new Map();
+    lista.forEach((p) => {
+      const k = porMarca ? marcaDe(p) : p.categoria;
+      if (!grupos.has(k)) grupos.set(k, []);
+      grupos.get(k).push(p);
+    });
+    let claves = [...grupos.keys()];
+    if (porMarca) claves.sort((a, b) => a.localeCompare(b, "es"));
+
+    $("lista").innerHTML = claves.map((k) => `
+      <h2 class="grupo">${esc(k)}<small>${grupos.get(k).length}</small></h2>
+      ${grupos.get(k).map((p) => itemHTML(p, !porMarca)).join("")}
+    `).join("");
   }
 
   /* ---------- Render: carrito ---------- */
@@ -113,7 +180,7 @@
             <div class="linea">
               <div>
                 <strong>${esc(p.nombre)}</strong>
-                <span>${esc(textoCantidad(p, c))}</span>
+                <span>${p.marca ? esc(p.marca) + " · " : ""}${esc(textoCantidad(p, c))}</span>
               </div>
               <div class="linea-der">
                 <span>${moneda.format(subtotal(p, c))}</span>
@@ -143,7 +210,7 @@
 
     const lineas = Object.keys(carrito).map((id) => {
       const p = porId.get(id), c = carrito[id];
-      return `• ${p.nombre}: ${textoCantidad(p, c)} (${moneda.format(subtotal(p, c))})`;
+      return `• ${nombreCompleto(p)}: ${textoCantidad(p, c)} (${moneda.format(subtotal(p, c))})`;
     });
 
     const partes = [
@@ -165,14 +232,21 @@
   }
 
   /* ---------- Eventos ---------- */
+  function limpiarFiltros() {
+    filtro = "Todos"; marcaSel = TODAS; busqueda = "";
+    $("buscar").value = "";
+    renderFiltros(); renderMarcas(); renderCatalogo();
+  }
+
   document.addEventListener("click", (e) => {
     const b = e.target.closest("button");
     if (!b) return;
 
     if (b.dataset.cat) {
       filtro = b.dataset.cat;
-      renderFiltros();
-      renderCatalogo();
+      renderFiltros(); renderMarcas(); renderCatalogo();
+    } else if (b.dataset.limpiar) {
+      limpiarFiltros();
     } else if (b.dataset.quitar) {
       delete carrito[b.dataset.id];
       guardar();
@@ -182,11 +256,15 @@
     }
   });
 
+  $("marca").addEventListener("change", (e) => { marcaSel = e.target.value; renderCatalogo(); });
+  $("buscar").addEventListener("input", (e) => { busqueda = e.target.value; renderCatalogo(); });
+
   $("enviar").addEventListener("click", enviar);
   $("vaciar").addEventListener("click", () => {
     if (confirm("¿Vaciar todo el pedido?")) { carrito = {}; guardar(); renderTodo(); }
   });
 
   renderFiltros();
+  renderMarcas();
   renderTodo();
 })();

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Hacer un pedido · q'Queso</title>
 <meta name="description" content="Armá tu pedido de quesos, embutidos y fiambres y envialo por WhatsApp.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧀</text></svg>">
+<link rel="icon" href="Logo_q_Queso-Sin-Fondo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500&display=swap" rel="stylesheet">
@@ -24,10 +24,18 @@
 <main class="wrap pedido">
   <div class="catalogo">
     <h1>Armá tu pedido</h1>
-    <p class="aviso">Elegí lo que quieras y lo enviamos por WhatsApp. Los precios son orientativos y los confirmamos al preparar tu pedido.</p>
+    <p class="aviso">Elegí lo que quieras y se hara un mensaje de WhatsApp directo a nosotros. Los precios son orientativos y los vamos a confirmar al preparar tu pedido.</p>
 
-    <div class="filtros" id="filtros" role="group" aria-label="Filtrar por categoría"></div>
-    <div id="lista" aria-live="polite"></div>
+    <div class="herramientas">
+      <div class="filtros" id="filtros" role="group" aria-label="Filtrar por categoría"></div>
+      <div class="selectores">
+        <input id="buscar" type="search" placeholder="Buscar producto o marca…" aria-label="Buscar producto o marca" autocomplete="off">
+        <select id="marca" aria-label="Filtrar por marca"></select>
+      </div>
+    </div>
+    <p class="aviso-cat" id="aviso-cat" hidden></p>
+    <p class="resultados" id="resultados" aria-live="polite"></p>
+    <div id="lista"></div>
   </div>
 
   <aside class="carrito" id="carrito" aria-label="Tu pedido">
@@ -43,7 +51,7 @@
       <label for="nombre">Tu nombre</label>
       <input id="nombre" type="text" autocomplete="name" placeholder="Opcional">
       <label for="nota">Aclaraciones</label>
-      <textarea id="nota" rows="3" placeholder="Dirección, retiro, envío, horario, cortes…"></textarea>
+      <textarea id="nota" rows="2" placeholder="Dirección, retiro, envío, horario, cortes…"></textarea>
       <button class="boton enviar" id="enviar" type="button">Enviar pedido por WhatsApp</button>
       <button class="vaciar" id="vaciar" type="button">Vaciar pedido</button>
     </div>
